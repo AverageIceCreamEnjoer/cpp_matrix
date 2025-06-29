@@ -1,7 +1,7 @@
 #include "matrix.h"
 
-void Matrix::setRow(int row) {
-  if (row < 0) throw std::length_error("Matrix size must be non-negative");
+void Matrix::SetRow(int row) {
+  if (row < 0) throw std::invalid_argument("Matrix size must be non-negative");
   if (row != rows_) {
     Matrix temp(row, cols_);
     int min = std::min(rows_, row);
@@ -11,8 +11,8 @@ void Matrix::setRow(int row) {
   }
 }  // setter/mutator
 
-void Matrix::setCol(int col) {
-  if (col < 0) throw std::length_error("Matrix size must be non-negative");
+void Matrix::SetCol(int col) {
+  if (col < 0) throw std::invalid_argument("Matrix size must be non-negative");
   if (col != cols_) {
     Matrix temp(rows_, col);
     int min = std::min(cols_, col);
@@ -30,7 +30,7 @@ Matrix Matrix::Transpose() const noexcept {
 }
 
 Matrix Matrix::CalcComplements() const {
-  if (rows_ != cols_) throw std::out_of_range("Matrix isn't square");
+  if (rows_ != cols_) throw std::logic_error("Matrix isn't square");
   Matrix res(rows_, cols_);
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {
@@ -43,7 +43,7 @@ Matrix Matrix::CalcComplements() const {
 
 // Gauss method
 ld Matrix::Determinant() const {
-  if (rows_ != cols_) throw std::out_of_range("Matrix isn't square");
+  if (rows_ != cols_) throw std::logic_error("Matrix isn't square");
   ld res = 1;
   Matrix tmp(*this);
   int size = rows_;
@@ -70,23 +70,23 @@ ld Matrix::Determinant() const {
 }
 
 Matrix Matrix::Inverse() const {
-  if (rows_ != cols_) throw std::out_of_range("Matrix isn't square");
+  if (rows_ != cols_) throw std::logic_error("Matrix isn't square");
   ld det = Determinant();
   if (std::abs(det) < std::numeric_limits<ld>::min())
-    throw std::out_of_range("Determinant must be non-zero");
+    throw std::underflow_error("Determinant must be non-zero");
   return CalcComplements().Transpose() * (1.0 / det);
 }
 
 void Matrix::SubMatrix(const Matrix& other) {
   if (!(rows_ == other.rows_ && cols_ == other.cols_))
-    throw std::out_of_range("Different matrix sizes");
+    throw std::invalid_argument("Different matrix sizes");
   for (int i = 0; i < rows_; i++)
     for (int j = 0; j < cols_; j++) (*this)(i, j) -= other(i, j);
 }
 
 void Matrix::SumMatrix(const Matrix& other) {
   if (!(rows_ == other.rows_ && cols_ == other.cols_))
-    throw std::out_of_range("Different matrix sizes");
+    throw std::invalid_argument("Different matrix sizes");
   for (int i = 0; i < rows_; i++)
     for (int j = 0; j < cols_; j++) (*this)(i, j) += other(i, j);
 }
@@ -113,7 +113,7 @@ void Matrix::MulMatrix(const Matrix& other) {
   *this = std::move(temp);
 }
 
-ld Matrix::norm2() const noexcept {
+ld Matrix::Norm2() const noexcept {
   ld result = 0;
   for (int i = 0; i < rows_; ++i)
     for (int j = 0; j < cols_; ++j) result += std::pow((*this)(i, j), 2);
@@ -121,7 +121,7 @@ ld Matrix::norm2() const noexcept {
   return result;
 }
 
-void Matrix::print() const {
+void Matrix::Print() const {
   // if (rows_ > 10) throw std::length_error("Matrix is too big.");
   for (int i = 0; i < rows_; ++i) {
     for (int j = 0; j < cols_; ++j)
@@ -150,7 +150,7 @@ ld Matrix::Scalar(const Matrix& other) const {
   return res;
 }
 
-std::vector<ld> Matrix::row(int index) const {
+std::vector<ld> Matrix::Row(int index) const {
   return std::vector<ld>(matrix_.get() + index * cols_,
                          matrix_.get() + (index + 1) * cols_);
 }
@@ -161,14 +161,14 @@ Matrix Matrix::LUSolver(const Matrix& f) const {
   Matrix P(rows_, 1);
   for (int i = 0; i < rows_; i++) P(i, 0) = i;
   // построение верхней треугольной матрицы
-  for (int i = 0; i < LU.getRows() - 1; i++) {
+  for (int i = 0; i < LU.GetRows() - 1; i++) {
     // находим ведущий элемент в i-том столбце
     int I = LU.Find_Main_Element(i);
     // если это не диагональ
     if (I != i) {
       // переставляем строки I и i в СЛАУ местами
-      auto Row = LU.row(I);
-      for (int j = 0; j < LU.getCols(); ++j) {
+      auto Row = LU.Row(I);
+      for (int j = 0; j < LU.GetCols(); ++j) {
         LU(I, j) = LU(i, j);
         LU(i, j) = Row[j];
       }
@@ -177,12 +177,12 @@ Matrix Matrix::LUSolver(const Matrix& f) const {
       P(I, 0) = Index;
     }
     // для оставшихся строк выполним умножение слева на матрицу преобразований
-    for (int j = i + 1; j < LU.getRows(); j++) {
+    for (int j = i + 1; j < LU.GetRows(); j++) {
       ld help = LU(j, i) / LU(i, i);
       // для уменьшения ошибок вычислений обнуляемые компоненты занулим явно
       LU(j, i) = 0;
-      // вычитаем элементы строки i из строк от i + 1 до A.getRows()
-      for (int k = i + 1; k < LU.getRows(); k++) {
+      // вычитаем элементы строки i из строк от i + 1 до A.GetRows()
+      for (int k = i + 1; k < LU.GetRows(); k++) {
         LU(j, k) -= help * LU(i, k);
       }
     }
@@ -198,14 +198,14 @@ Matrix Matrix::LUSolver(const Matrix& f) const {
     }
   }
   Matrix X(rows_, 1);
-  for (int i = 0; i < LU.getRows(); ++i) {
+  for (int i = 0; i < LU.GetRows(); ++i) {
     X(i, 0) = f(P(i, 0), 0);
     for (int j = 0; j < i; ++j) X(i, 0) -= LU(i, j) * X(j, 0);
   }
-  for (int i = LU.getRows() - 1; i >= 0; --i) {
+  for (int i = LU.GetRows() - 1; i >= 0; --i) {
     if (std::abs(LU(i, i)) < std::numeric_limits<ld>::min())
       throw std::out_of_range("Division by zero");
-    for (int j = i + 1; j < LU.getRows(); ++j) X(i, 0) -= LU(i, j) * X(j, 0);
+    for (int j = i + 1; j < LU.GetRows(); ++j) X(i, 0) -= LU(i, j) * X(j, 0);
     X(i, 0) /= LU(i, i);
   }
   return X;
@@ -221,10 +221,10 @@ std::pair<Matrix, Matrix> Matrix::Householder() const {
   Matrix Q(rows_, cols_);
   for (int i = 0; i < rows_; ++i) Q(i, i) = 1;
   // алгоритм отражений Хаусхолдера
-  for (int i = 0; i < R.getCols() - 1; i++) {
+  for (int i = 0; i < R.GetCols() - 1; i++) {
     // находим квадрат нормы столбца для обнуления
     s = 0;
-    for (int I = i; I < R.getRows(); I++) s += std::pow(R(I, i), 2);
+    for (int I = i; I < R.GetRows(); I++) s += std::pow(R(I, i), 2);
     // если есть ненулевые элементы под диагональю, тогда
     // квадрат нормы вектора для обнуления не совпадает с квадратом
     // диагонального элемента
@@ -238,35 +238,35 @@ std::pair<Matrix, Matrix> Matrix::Householder() const {
       // вычисляем множитель в м.Хаусхолдера mu = 2 / ||p||^2
       mu = 1.0 / (beta * (beta - R(i, i)));
       // формируем вектор p
-      for (int I = 0; I < R.getRows(); I++) {
+      for (int I = 0; I < R.GetRows(); I++) {
         p(I, 0) = 0;
         if (I >= i) p(I, 0) = R(I, i);
       }
       // изменяем диагональный элемент
       p(i, 0) -= beta;
       // вычисляем новые компоненты матрицы A = Hm * H(m-1) ... * A
-      for (int m = i; m < R.getCols(); m++) {
+      for (int m = i; m < R.GetCols(); m++) {
         // произведение S = At * p
         s = 0;
-        for (int n = i; n < R.getRows(); n++) {
+        for (int n = i; n < R.GetRows(); n++) {
           s += R(n, m) * p(n, 0);
         }
         s *= mu;
         // A = A - 2 * p * (At * p)^t / ||p||^2
-        for (int n = i; n < R.getRows(); n++) {
+        for (int n = i; n < R.GetRows(); n++) {
           R(n, m) -= s * p(n, 0);
         }
       }
       // вычисляем новые компоненты матрицы Q = Q * H1 * H2 * ...
-      for (int m = 0; m < R.getRows(); m++) {
+      for (int m = 0; m < R.GetRows(); m++) {
         // произведение Q * p
         s = 0;
-        for (int n = i; n < R.getRows(); n++) {
+        for (int n = i; n < R.GetRows(); n++) {
           s += Q(m, n) * p(n, 0);
         }
         s *= mu;
         // Q = Q - p * (Q * p)^t
-        for (int n = i; n < R.getRows(); n++) {
+        for (int n = i; n < R.GetRows(); n++) {
           Q(m, n) -= s * p(n, 0);
         }
       }
@@ -298,9 +298,9 @@ ld Matrix::Cond_InfinityNorm() const {
   for (int i = Begin; i < End; i++) {
     A1(i, 0) = 1.0;
     Matrix y = QR.first.Transpose() * A1;
-    for (int i = A1.getRows() - 1; i >= 0; --i) {
+    for (int i = A1.GetRows() - 1; i >= 0; --i) {
       ld s = 0;
-      for (int j = i + 1; j < A1.getRows() - 1; ++j) s += QR.second(i, j);
+      for (int j = i + 1; j < A1.GetRows() - 1; ++j) s += QR.second(i, j);
       A1(i, 0) = (y(i, 0) - s) / QR.second(i, i);
     }
     S1 = 0;
@@ -318,12 +318,12 @@ ld Matrix::Cond_InfinityNorm() const {
 
 void Householder_Col_Transform(Matrix& A, Matrix& U, int i, int j) {
   // вектор отражения
-  Matrix p(A.getRows(), 1);
+  Matrix p(A.GetRows(), 1);
   // вспомогательные переменные
   ld s, beta, mu;
   // находим квадрат нормы столбца для обнуления
   s = 0;
-  for (int I = j; I < A.getRows(); I++) s += std::pow(A(I, i), 2);
+  for (int I = j; I < A.GetRows(); I++) s += std::pow(A(I, i), 2);
   // если ненулевые элементы под диагональю есть:
   // квадрат нормы вектора для обнуления не совпадает с квадратом зануляемого
   // элемента
@@ -337,35 +337,35 @@ void Householder_Col_Transform(Matrix& A, Matrix& U, int i, int j) {
     // вычисляем множитель в м.Хаусхолдера mu = 2 / ||p||^2
     mu = 1.0 / (beta * (beta - A(j, i)));
     // формируем вектор p
-    for (int I = 0; I < A.getRows(); I++) {
+    for (int I = 0; I < A.GetRows(); I++) {
       p(I, 0) = 0;
       if (I >= j) p(I, 0) = A(I, i);
     }
     // изменяем элемент, с которого начнётся обнуление
     p(j, 0) -= beta;
     // вычисляем новые компоненты матрицы A = ... * U2 * U1 * A
-    for (int m = 0; m < A.getCols(); m++) {
+    for (int m = 0; m < A.GetCols(); m++) {
       // произведение S = St * p
       s = 0;
-      for (int n = j; n < A.getRows(); n++) {
+      for (int n = j; n < A.GetRows(); n++) {
         s += A(n, m) * p(n, 0);
       }
       s *= mu;
       // S = S - 2 * p * (St * p)^t / ||p||^2
-      for (int n = j; n < A.getRows(); n++) {
+      for (int n = j; n < A.GetRows(); n++) {
         A(n, m) -= s * p(n, 0);
       }
     }
     // вычисляем новые компоненты матрицы U = ... * H2 * H1 * U
-    for (int m = 0; m < A.getRows(); m++) {
+    for (int m = 0; m < A.GetRows(); m++) {
       // произведение S = Ut * p
       s = 0;
-      for (int n = j; n < A.getRows(); n++) {
+      for (int n = j; n < A.GetRows(); n++) {
         s += U(m, n) * p(n, 0);
       }
       s *= mu;
       // U = U - 2 * p * (Ut * p)^t / ||p||^2
-      for (int n = j; n < A.getRows(); n++) {
+      for (int n = j; n < A.GetRows(); n++) {
         U(m, n) -= s * p(n, 0);
       }
     }
@@ -374,12 +374,12 @@ void Householder_Col_Transform(Matrix& A, Matrix& U, int i, int j) {
 
 void Householder_Row_Transform(Matrix& A, Matrix& V, int i, int j) {
   // вектор отражения
-  Matrix p(A.getCols(), 1);
+  Matrix p(A.GetCols(), 1);
   // вспомогательные переменные
   ld s, beta, mu;
   // находим квадрат нормы строки для обнуления
   s = 0;
-  for (int I = j; I < A.getCols(); I++) s += std::pow(A(i, I), 2);
+  for (int I = j; I < A.GetCols(); I++) s += std::pow(A(i, I), 2);
   // если ненулевые элементы под диагональю есть:
   // квадрат нормы вектора для обнуления не совпадает с квадратом зануляемого
   // элемента
@@ -393,35 +393,35 @@ void Householder_Row_Transform(Matrix& A, Matrix& V, int i, int j) {
     // вычисляем множитель в м.Хаусхолдера mu = 2 / ||p||^2
     mu = 1.0 / (beta * (beta - A(i, j)));
     // формируем вектор p
-    for (int I = 0; I < A.getCols(); I++) {
+    for (int I = 0; I < A.GetCols(); I++) {
       p(I, 0) = 0;
       if (I >= j) p(I, 0) = A(i, I);
     }
     // изменяем диагональный элемент
     p(j, 0) -= beta;
     // вычисляем новые компоненты матрицы A = A * H1 * H2 ...
-    for (int m = 0; m < A.getRows(); m++) {
+    for (int m = 0; m < A.GetRows(); m++) {
       // произведение A * p
       s = 0;
-      for (int n = j; n < A.getCols(); n++) {
+      for (int n = j; n < A.GetCols(); n++) {
         s += A(m, n) * p(n, 0);
       }
       s *= mu;
       // A = A - p * (A * p)^t
-      for (int n = j; n < A.getCols(); n++) {
+      for (int n = j; n < A.GetCols(); n++) {
         A(m, n) -= s * p(n, 0);
       }
     }
     // вычисляем новые компоненты матрицы V = V * H1 * H2 * ...
-    for (int m = 0; m < A.getCols(); m++) {
+    for (int m = 0; m < A.GetCols(); m++) {
       // произведение V * p
       s = 0;
-      for (int n = j; n < A.getCols(); n++) {
+      for (int n = j; n < A.GetCols(); n++) {
         s += V(m, n) * p(n, 0);
       }
       s *= mu;
       // V = V - p * (V * p)^t
-      for (int n = j; n < A.getCols(); n++) {
+      for (int n = j; n < A.GetCols(); n++) {
         V(m, n) -= s * p(n, 0);
       }
     }
@@ -441,7 +441,7 @@ void Givens_Delete_Elem_Down_Triangle(Matrix& A, Matrix& U, int I, int J) {
     s = A(I, J) / help1;
 
     // A_new = Gt * A
-    for (int k = 0; k < A.getCols(); k++) {
+    for (int k = 0; k < A.GetCols(); k++) {
       help1 = c * A(J, k) + s * A(I, k);
       help2 = c * A(I, k) - s * A(J, k);
       A(J, k) = help1;
@@ -449,7 +449,7 @@ void Givens_Delete_Elem_Down_Triangle(Matrix& A, Matrix& U, int I, int J) {
     }
     // умножаем матрицу U на матрицу преобразования G справа: D = Qt * A * Q =>
     // Qt транспонируется для матрицы U
-    for (int k = 0; k < U.getRows(); k++) {
+    for (int k = 0; k < U.GetRows(); k++) {
       help1 = c * U(k, J) + s * U(k, I);
       help2 = c * U(k, I) - s * U(k, J);
       U(k, J) = help1;
@@ -472,14 +472,14 @@ void Givens_Delete_Elem_Up_Triangle(Matrix& A, Matrix& V, int I, int J) {
     s = -A(I, J) / help1;
 
     // A_new = A * Gt
-    for (int k = 0; k < A.getRows(); k++) {
+    for (int k = 0; k < A.GetRows(); k++) {
       help1 = c * A(k, I) - s * A(k, J);
       help2 = c * A(k, J) + s * A(k, I);
       A(k, I) = help1;
       A(k, J) = help2;
     }
     // умножаем матрицу V на матрицу преобразования Gt справа
-    for (int k = 0; k < V.getRows(); k++) {
+    for (int k = 0; k < V.GetRows(); k++) {
       help1 = c * V(k, I) - s * V(k, J);
       help2 = c * V(k, J) + s * V(k, I);
       V(k, I) = help1;
@@ -494,14 +494,14 @@ void Matrix::SVD(Matrix& U, Matrix& Sigma, Matrix& V, ld Reduction) const {
   // размеры нижней и верхней внешних диагоналей
   int Up_Size = Min_Size - 1, Down_Size = Min_Size - 1;
   // инициализация матрицы левых сингулярных векторов
-  U.setRow(rows_);
-  U.setCol(rows_);
+  U.SetRow(rows_);
+  U.SetCol(rows_);
   // матрица сингулярных чисел
-  Sigma.setRow(rows_);
-  Sigma.setCol(cols_);
+  Sigma.SetRow(rows_);
+  Sigma.SetCol(cols_);
   // инициализация матрицы правых сингулярных векторов
-  V.setRow(cols_);
-  V.setCol(cols_);
+  V.SetRow(cols_);
+  V.SetCol(cols_);
   // инициализация матриц для SVD
   for (int i = 0; i < rows_; i++) {
     U(i, i) = 1.0;
@@ -568,12 +568,12 @@ void Matrix::SVD(Matrix& U, Matrix& Sigma, Matrix& V, ld Reduction) const {
   //----------------------------------------
   // убираем отрицательные сингулярные числа
   // наименьшее измерение
-  Min_Size = std::min(Sigma.getRows(), Sigma.getCols());
+  Min_Size = std::min(Sigma.GetRows(), Sigma.GetCols());
   // проверка сингулярных чисел на положительность
   for (int i = 0; i < Min_Size; i++) {
     if (Sigma(i, i) < 0) {
       Sigma(i, i) = -Sigma(i, i);
-      for (int j = 0; j < U.getRows(); j++) U(j, i) = -U(j, i);
+      for (int j = 0; j < U.GetRows(); j++) U(j, i) = -U(j, i);
     }
   }
   //-----------------------------------------
@@ -592,8 +592,8 @@ void Matrix::SVD(Matrix& U, Matrix& Sigma, Matrix& V, ld Reduction) const {
     if (I != Index) {
       Sigma(Index, Index) = Sigma(I, I);
       Sigma(I, I) = Max_Elem;
-      for (int j = 0; j < U.getRows(); j++) std::swap(U(j, I), U(j, Index));
-      for (int j = 0; j < V.getRows(); j++) std::swap(V(j, I), V(j, Index));
+      for (int j = 0; j < U.GetRows(); j++) std::swap(U(j, I), U(j, Index));
+      for (int j = 0; j < V.GetRows(); j++) std::swap(V(j, I), V(j, Index));
     }
   }
   //-----------------------------------------
@@ -606,8 +606,8 @@ void Matrix::SVD(Matrix& U, Matrix& Sigma, Matrix& V, ld Reduction) const {
     }
   }
   // редукция размерности матриц
-  Sigma.setRow(Min_Size);
-  Sigma.setCol(Min_Size);
-  U.setCol(Min_Size);
-  V.setCol(Min_Size);
+  Sigma.SetRow(Min_Size);
+  Sigma.SetCol(Min_Size);
+  U.SetCol(Min_Size);
+  V.SetCol(Min_Size);
 }

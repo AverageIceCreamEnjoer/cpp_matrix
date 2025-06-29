@@ -16,7 +16,8 @@ class Matrix final {
 
   explicit Matrix(int rows, int cols) : rows_{rows}, cols_{cols} {
     if (rows_ < 0 || cols_ < 0)
-      throw std::length_error("Matrix size must be non-negative");  // exception
+      throw std::invalid_argument(
+          "Matrix size must be non-negative");  // exception
     matrix_ = std::make_unique<ld[]>(rows_ * cols_);
   }  // matrix rows*cols size
 
@@ -37,11 +38,11 @@ class Matrix final {
 
   ~Matrix() noexcept { Free(); }  // Destructor
 
-  int getRows() const noexcept { return rows_; }  // getter/accessor
-  int getCols() const noexcept { return cols_; }  // getter/accessor
+  int GetRows() const noexcept { return rows_; }  // getter/accessor
+  int GetCols() const noexcept { return cols_; }  // getter/accessor
 
-  void setRow(int row);
-  void setCol(int col);
+  void SetRow(int row);
+  void SetCol(int col);
   Matrix Inverse() const;
   Matrix Transpose() const noexcept;
   void SubMatrix(const Matrix& other);
@@ -52,10 +53,10 @@ class Matrix final {
   ld Determinant() const;
   ld Scalar(const Matrix& other) const;
   Matrix CalcComplements() const;
-  ld norm2() const noexcept;
-  void print() const;
+  ld Norm2() const noexcept;
+  void Print() const;
   int Find_Main_Element(int j) const;
-  std::vector<ld> row(int index) const;
+  std::vector<ld> Row(int index) const;
   ld Cond_InfinityNorm() const;
 
   /**
@@ -133,19 +134,34 @@ class Matrix final {
     return tmp;
   }
 
+  /* TODO
   friend Matrix operator/(const ld num, const Matrix& matrix) {
     Matrix tmp = matrix / num;
     return tmp;
-  }
+  }*/
 
   Matrix& operator/=(ld num) {
     DivNumber(num);
     return *this;
   }
 
+  bool operator==(const Matrix& other) const {
+    bool result = (rows_ != other.rows_ || cols_ != other.cols_) ? false : true;
+    if (result)
+      for (int i = 0; i < rows_; i++)
+        for (int j = 0; j < cols_; j++)
+          if ((*this)(i, j) != other(i, j)) {
+            result = false;
+            break;
+          }
+    return result;
+  }
+
+  bool operator!=(const Matrix& other) const { return !(*this == other); }
+
   Matrix& operator=(const Matrix& other) {
-    setRow(other.rows_);
-    setCol(other.cols_);
+    SetRow(other.rows_);
+    SetCol(other.cols_);
     for (int i = 0; i < rows_; i++)
       for (int j = 0; j < cols_; j++) (*this)(i, j) = other(i, j);
     return *this;

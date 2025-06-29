@@ -4,7 +4,7 @@ TEST_DIR = tests
 GCOV_DIR = coverage
 TARGET = matrix.a
 CC = g++
-C_FLAGS = -std=c++17 -Wall -Wextra -Werror -O3
+C_FLAGS = -std=c++17 -Wall -Wextra -Werror
 LD_FLAGS =
 CPP_SOURCES = $(wildcard *.cc)
 CPP_OBJECTS = $(patsubst %.cc,$(RES_DIR)/%.o,$(CPP_SOURCES))
@@ -18,6 +18,7 @@ C_FLAGS += --coverage
 LD_FLAGS += --coverage
 endif
 
+$(TARGET): C_FLAGS += -O3
 $(TARGET): $(RES_DIR) $(CPP_OBJECTS)
 	ar rcs $(TARGET) $(CPP_OBJECTS)
 	ranlib $(TARGET)
