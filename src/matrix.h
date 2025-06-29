@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <limits>
+#include <memory>
 #include <vector>
 
 using ld = long double;
@@ -15,16 +17,19 @@ class Matrix final {
   explicit Matrix(int rows, int cols) : rows_{rows}, cols_{cols} {
     if (rows_ < 0 || cols_ < 0)
       throw std::length_error("Matrix size must be non-negative");  // exception
-    matrix_ = new ld[rows_ * cols_]{};
+    matrix_ = std::make_unique<ld[]>(rows_ * cols_);
   }  // matrix rows*cols size
 
   Matrix(const Matrix& other) : rows_{other.rows_}, cols_{other.cols_} {
-    matrix_ = new ld[rows_ * cols_];
-    std::copy(other.matrix_, other.matrix_ + rows_ * cols_, matrix_);
+    matrix_ = std::make_unique<ld[]>(rows_ * cols_);
+    std::copy(other.matrix_.get(), other.matrix_.get() + rows_ * cols_,
+              matrix_.get());
   }  // copy
 
   Matrix(Matrix&& other) noexcept
-      : rows_{other.rows_}, cols_{other.cols_}, matrix_{other.matrix_} {
+      : rows_{other.rows_},
+        cols_{other.cols_},
+        matrix_(std::move(other.matrix_)) {
     other.matrix_ = nullptr;
     other.rows_ = 0;
     other.cols_ = 0;
@@ -166,11 +171,11 @@ class Matrix final {
  private:
   // Attributes
   int rows_, cols_;  // Rows and columns
-  ld* matrix_;       // Pointer to the memory where the matrix is allocated
+  std::unique_ptr<ld[]>
+      matrix_;  // Pointer to the memory where the matrix is allocated
 
   // Private methods
   void Free() noexcept {
-    delete[] matrix_;
     rows_ = 0;
     cols_ = 0;
     matrix_ = nullptr;
@@ -181,7 +186,7 @@ class Matrix final {
       std::cout << row << ' ' << col << std::endl;
       throw std::out_of_range("Index is out of range this matrix");
     }
-    return matrix_[row * cols_ + col];
+    return matrix_.get()[row * cols_ + col];
   }
 
   ld Minor(int row, int col) const {

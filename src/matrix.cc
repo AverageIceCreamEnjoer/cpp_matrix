@@ -151,8 +151,8 @@ ld Matrix::Scalar(const Matrix& other) const {
 }
 
 std::vector<ld> Matrix::row(int index) const {
-  return std::vector<ld>(matrix_ + index * cols_,
-                         matrix_ + (index + 1) * cols_);
+  return std::vector<ld>(matrix_.get() + index * cols_,
+                         matrix_.get() + (index + 1) * cols_);
 }
 
 Matrix Matrix::LUSolver(const Matrix& f) const {
