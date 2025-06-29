@@ -98,14 +98,14 @@ void Matrix::MulNumber(const ld num) noexcept {
 
 void Matrix::DivNumber(const ld num) {
   if (std::abs(num) <= std::numeric_limits<ld>::min())
-    throw std::out_of_range("Division by zero");
+    throw std::domain_error("Division by zero");
   for (int i = 0; i < rows_; ++i)
     for (int j = 0; j < cols_; ++j) (*this)(i, j) /= num;
 }
 
 void Matrix::MulMatrix(const Matrix& other) {
   if (cols_ != other.rows_)
-    throw std::out_of_range("Incorrect matrixes size for multiplication");
+    throw std::invalid_argument("Incorrect matrixes size for multiplication");
   Matrix temp(rows_, other.cols_);
   for (int i = 0; i < rows_; i++)
     for (int j = 0; j < other.cols_; j++)
@@ -121,6 +121,9 @@ ld Matrix::Norm2() const noexcept {
   return result;
 }
 
+/*
+TODO: изменить на std::cout и вывод через итераторы
+*/
 void Matrix::Print() const {
   // if (rows_ > 10) throw std::length_error("Matrix is too big.");
   for (int i = 0; i < rows_; ++i) {
@@ -132,7 +135,8 @@ void Matrix::Print() const {
 }
 
 // поиск ведущего элемента в j-ом столбце матрицы
-int Matrix::Find_Main_Element(int j) const {
+int Matrix::FindMainElement(int j) const {
+  if (j < 0 || j >= cols_) throw std::out_of_range("Index out of range");
   int Index = j;
   for (int i = j + 1; i < rows_; i++)
     if (std::abs((*this)(i, j)) > std::abs((*this)(Index, j))) Index = i;
@@ -143,7 +147,7 @@ int Matrix::Find_Main_Element(int j) const {
 
 ld Matrix::Scalar(const Matrix& other) const {
   if (rows_ != other.rows_ || cols_ != other.cols_)
-    throw std::out_of_range("Different matrix sizes");
+    throw std::invalid_argument("Different matrix sizes");
   ld res = 0;
   for (int i = 0; i < rows_; i++)
     for (int j = 0; j < cols_; j++) res += (*this)(i, j) * other(i, j);
@@ -151,6 +155,8 @@ ld Matrix::Scalar(const Matrix& other) const {
 }
 
 std::vector<ld> Matrix::Row(int index) const {
+  if (index < 0 || index >= rows_)
+    throw std::out_of_range("Index out of range");
   return std::vector<ld>(matrix_.get() + index * cols_,
                          matrix_.get() + (index + 1) * cols_);
 }
@@ -163,7 +169,7 @@ Matrix Matrix::LUSolver(const Matrix& f) const {
   // построение верхней треугольной матрицы
   for (int i = 0; i < LU.GetRows() - 1; i++) {
     // находим ведущий элемент в i-том столбце
-    int I = LU.Find_Main_Element(i);
+    int I = LU.FindMainElement(i);
     // если это не диагональ
     if (I != i) {
       // переставляем строки I и i в СЛАУ местами

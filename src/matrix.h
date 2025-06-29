@@ -55,7 +55,6 @@ class Matrix final {
   Matrix CalcComplements() const;
   ld Norm2() const noexcept;
   void Print() const;
-  int Find_Main_Element(int j) const;
   std::vector<ld> Row(int index) const;
   ld Cond_InfinityNorm() const;
 
@@ -219,4 +218,6 @@ class Matrix final {
     }
     return temp.Determinant();
   }
+
+  int FindMainElement(int j) const;
 };

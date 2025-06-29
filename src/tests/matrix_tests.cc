@@ -159,3 +159,102 @@ TEST_F(MatrixTest, Inverse3) {
   matrix(1, 1) = 2;
   EXPECT_THROW(matrix.Inverse(), std::underflow_error);
 }
+
+// Тест разности матриц
+TEST_F(MatrixTest, SubMatrix1) {
+  matrix.SubMatrix(matrix);
+  EXPECT_EQ(matrix(0, 0), 0);
+  EXPECT_EQ(matrix(0, 1), 0);
+  EXPECT_EQ(matrix(1, 0), 0);
+  EXPECT_EQ(matrix(1, 1), 0);
+}
+
+TEST_F(MatrixTest, SubMatrix2) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix.SubMatrix(matrix2), std::invalid_argument);
+}
+
+// Тест суммы матриц
+TEST_F(MatrixTest, SumMatrix1) {
+  matrix.SumMatrix(matrix);
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
+TEST_F(MatrixTest, SumMatrix2) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix.SumMatrix(matrix2), std::invalid_argument);
+}
+
+// Тест произведения на число
+TEST_F(MatrixTest, MulNumber1) {
+  matrix.MulNumber(2);
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
+TEST_F(MatrixTest, MulNumber2) {
+  matrix.SetRow(1);
+  matrix.MulNumber(0);
+  EXPECT_EQ(matrix(0, 0), 0);
+  EXPECT_EQ(matrix(0, 1), 0);
+}
+
+// Тест деления на число
+TEST_F(MatrixTest, DivNumber1) {
+  matrix.DivNumber(2);
+  EXPECT_EQ(matrix(0, 0), 0.5);
+  EXPECT_EQ(matrix(0, 1), 1);
+  EXPECT_EQ(matrix(1, 0), 1);
+  EXPECT_EQ(matrix(1, 1), 0.5);
+}
+
+TEST_F(MatrixTest, DivNumber2) {
+  EXPECT_THROW(matrix.DivNumber(0), std::domain_error);
+}
+
+// Тест произведения матриц
+TEST_F(MatrixTest, MulMatrix1) {
+  matrix.MulMatrix(matrix);
+  EXPECT_EQ(matrix(0, 0), 5);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 5);
+}
+
+TEST_F(MatrixTest, MulMatrix2) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix.MulMatrix(matrix2), std::invalid_argument);
+}
+
+// Тест Евклидовой нормы
+TEST_F(MatrixTest, Norm2) {
+  EXPECT_EQ(matrix.Norm2(), std::sqrt(static_cast<long double>(10)));
+}
+
+// Тест скалярного произведения
+TEST_F(MatrixTest, Scalar1) {
+  Matrix matrix2(matrix);
+  EXPECT_EQ(matrix.Scalar(matrix), std::pow(matrix.Norm2(), 2));
+}
+
+TEST_F(MatrixTest, Scalar2) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix.Scalar(matrix2), std::invalid_argument);
+}
+
+TEST_F(MatrixTest, Row1) {
+  auto row = matrix.Row(0);
+  EXPECT_EQ(row[0], 1);
+  EXPECT_EQ(row[1], 2);
+}
+
+TEST_F(MatrixTest, Row2) { EXPECT_THROW(matrix.Row(-1), std::out_of_range); }
