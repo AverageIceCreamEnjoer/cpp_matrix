@@ -183,8 +183,9 @@ class Matrix final {
 
   const ld& GetElem(int row, int col) const {
     if (!(row < rows_ && col < cols_ && row >= 0 && col >= 0)) {
-      std::cout << row << ' ' << col << std::endl;
-      throw std::out_of_range("Index is out of range this matrix");
+      throw std::out_of_range("Index " + std::to_string(row) + ' ' +
+                              std::to_string(col) +
+                              " is out of range this matrix");
     }
     return matrix_.get()[row * cols_ + col];
   }
