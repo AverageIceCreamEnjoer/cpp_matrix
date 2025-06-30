@@ -175,6 +175,42 @@ TEST_F(MatrixTest, SubMatrix2) {
   EXPECT_THROW(matrix.SubMatrix(matrix2), std::invalid_argument);
 }
 
+TEST_F(MatrixTest, SubMatrix3) {
+  matrix = matrix - matrix;
+  EXPECT_EQ(matrix(0, 0), 0);
+  EXPECT_EQ(matrix(0, 1), 0);
+  EXPECT_EQ(matrix(1, 0), 0);
+  EXPECT_EQ(matrix(1, 1), 0);
+}
+
+TEST_F(MatrixTest, SubMatrix4) {
+  matrix = -matrix;
+  EXPECT_EQ(matrix(0, 0), -1);
+  EXPECT_EQ(matrix(0, 1), -2);
+  EXPECT_EQ(matrix(1, 0), -2);
+  EXPECT_EQ(matrix(1, 1), -1);
+}
+
+TEST_F(MatrixTest, SubMatrix5) {
+  matrix -= matrix;
+  EXPECT_EQ(matrix(0, 0), 0);
+  EXPECT_EQ(matrix(0, 1), 0);
+  EXPECT_EQ(matrix(1, 0), 0);
+  EXPECT_EQ(matrix(1, 1), 0);
+}
+
+TEST_F(MatrixTest, SubMatrix6) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix - matrix2, std::invalid_argument);
+}
+
+TEST_F(MatrixTest, SubMatrix7) {
+  Matrix matrix2(matrix);
+  matrix2.SetCol(1);
+  EXPECT_THROW(matrix -= matrix2, std::invalid_argument);
+}
+
 // Тест суммы матриц
 TEST_F(MatrixTest, SumMatrix1) {
   matrix.SumMatrix(matrix);
@@ -188,6 +224,34 @@ TEST_F(MatrixTest, SumMatrix2) {
   Matrix matrix2(matrix);
   matrix2.SetRow(1);
   EXPECT_THROW(matrix.SumMatrix(matrix2), std::invalid_argument);
+}
+
+TEST_F(MatrixTest, SumMatrix3) {
+  matrix = matrix + matrix;
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
+TEST_F(MatrixTest, SumMatrix4) {
+  matrix += matrix;
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
+TEST_F(MatrixTest, SumMatrix5) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix + matrix2, std::invalid_argument);
+}
+
+TEST_F(MatrixTest, SumMatrix6) {
+  Matrix matrix2(matrix);
+  matrix2.SetCol(1);
+  EXPECT_THROW(matrix += matrix2, std::invalid_argument);
 }
 
 // Тест произведения на число
@@ -206,6 +270,30 @@ TEST_F(MatrixTest, MulNumber2) {
   EXPECT_EQ(matrix(0, 1), 0);
 }
 
+TEST_F(MatrixTest, MulNumber3) {
+  matrix = matrix * 2;
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
+TEST_F(MatrixTest, MulNumber4) {
+  matrix *= 2;
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
+TEST_F(MatrixTest, MulNumber5) {
+  matrix = 2 * matrix;
+  EXPECT_EQ(matrix(0, 0), 2);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 2);
+}
+
 // Тест деления на число
 TEST_F(MatrixTest, DivNumber1) {
   matrix.DivNumber(2);
@@ -218,6 +306,28 @@ TEST_F(MatrixTest, DivNumber1) {
 TEST_F(MatrixTest, DivNumber2) {
   EXPECT_THROW(matrix.DivNumber(0), std::domain_error);
 }
+
+TEST_F(MatrixTest, DivNumber3) {
+  matrix = matrix / 2;
+  EXPECT_EQ(matrix(0, 0), 0.5);
+  EXPECT_EQ(matrix(0, 1), 1);
+  EXPECT_EQ(matrix(1, 0), 1);
+  EXPECT_EQ(matrix(1, 1), 0.5);
+}
+
+TEST_F(MatrixTest, DivNumber4) {
+  matrix /= 2;
+  EXPECT_EQ(matrix(0, 0), 0.5);
+  EXPECT_EQ(matrix(0, 1), 1);
+  EXPECT_EQ(matrix(1, 0), 1);
+  EXPECT_EQ(matrix(1, 1), 0.5);
+}
+
+TEST_F(MatrixTest, DivNumber5) {
+  EXPECT_THROW(matrix = matrix / 0, std::domain_error);
+}
+
+TEST_F(MatrixTest, DivNumber6) { EXPECT_THROW(matrix /= 0, std::domain_error); }
 
 // Тест произведения матриц
 TEST_F(MatrixTest, MulMatrix1) {
@@ -232,6 +342,72 @@ TEST_F(MatrixTest, MulMatrix2) {
   Matrix matrix2(matrix);
   matrix2.SetRow(1);
   EXPECT_THROW(matrix.MulMatrix(matrix2), std::invalid_argument);
+}
+
+TEST_F(MatrixTest, MulMatrix3) {
+  matrix = matrix * matrix;
+  EXPECT_EQ(matrix(0, 0), 5);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 5);
+}
+
+TEST_F(MatrixTest, MulMatrix4) {
+  matrix *= matrix;
+  EXPECT_EQ(matrix(0, 0), 5);
+  EXPECT_EQ(matrix(0, 1), 4);
+  EXPECT_EQ(matrix(1, 0), 4);
+  EXPECT_EQ(matrix(1, 1), 5);
+}
+
+TEST_F(MatrixTest, MulMatrix5) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix * matrix2, std::invalid_argument);
+}
+
+TEST_F(MatrixTest, MulMatrix6) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix *= matrix2, std::invalid_argument);
+}
+
+// Тест деления на матрицу
+TEST_F(MatrixTest, DivMatrix1) {
+  matrix = matrix / matrix;
+  EXPECT_EQ(matrix(0, 0), 1);
+  EXPECT_EQ(matrix(0, 1), 0);
+  EXPECT_EQ(matrix(1, 0), 0);
+  EXPECT_EQ(matrix(1, 1), 1);
+}
+
+TEST_F(MatrixTest, DivMatrix2) {
+  matrix /= matrix;
+  EXPECT_EQ(matrix(0, 0), 1);
+  EXPECT_EQ(matrix(0, 1), 0);
+  EXPECT_EQ(matrix(1, 0), 0);
+  EXPECT_EQ(matrix(1, 1), 1);
+}
+
+TEST_F(MatrixTest, DivMatrix3) {
+  Matrix matrix2(matrix);
+  matrix2.SetRow(1);
+  EXPECT_THROW(matrix / matrix2, std::logic_error);
+}
+
+TEST_F(MatrixTest, DivMatrix4) {
+  matrix(0, 0) = 2;
+  matrix(0, 1) = 1;
+  EXPECT_THROW(matrix /= matrix, std::underflow_error);
+}
+
+TEST_F(MatrixTest, DivMatrix5) {
+  Matrix matrix2 = 1 / matrix;
+  matrix2 *= matrix;
+  EXPECT_EQ(matrix2(0, 0), 1);
+  EXPECT_EQ(matrix2(0, 1), 0);
+  EXPECT_EQ(matrix2(1, 0), 0);
+  EXPECT_EQ(matrix2(1, 1), 1);
 }
 
 // Тест Евклидовой нормы

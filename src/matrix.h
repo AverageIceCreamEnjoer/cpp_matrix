@@ -98,10 +98,21 @@ class Matrix final {
    */
   void SVD(Matrix& U, Matrix& Sigma, Matrix& V, ld Reduction) const;
 
+  Matrix operator-() const noexcept {
+    Matrix tmp(*this);
+    tmp.MulNumber(-1);
+    return tmp;
+  }
+
   Matrix operator-(const Matrix& other) const {
     Matrix tmp(*this);
     tmp.SubMatrix(other);
     return tmp;
+  }
+
+  Matrix& operator-=(const Matrix& other) {
+    SubMatrix(other);
+    return *this;
   }
 
   Matrix operator+(const Matrix& other) const {
@@ -110,16 +121,31 @@ class Matrix final {
     return tmp;
   }
 
+  Matrix& operator+=(const Matrix& other) {
+    SumMatrix(other);
+    return *this;
+  }
+
   Matrix operator*(const Matrix& other) const {
     Matrix tmp(*this);
     tmp.MulMatrix(other);
     return tmp;
   }
 
+  Matrix& operator*=(const Matrix& other) {
+    MulMatrix(other);
+    return *this;
+  }
+
   Matrix operator*(const ld num) const noexcept {
     Matrix tmp(*this);
     tmp.MulNumber(num);
     return tmp;
+  }
+
+  Matrix& operator*=(const ld num) noexcept {
+    MulNumber(num);
+    return *this;
   }
 
   friend Matrix operator*(const ld num, const Matrix& matrix) noexcept {
@@ -133,16 +159,20 @@ class Matrix final {
     return tmp;
   }
 
-  /* TODO
   friend Matrix operator/(const ld num, const Matrix& matrix) {
-    Matrix tmp = matrix / num;
-    return tmp;
-  }*/
+    return num * matrix.Inverse();
+  }
 
   Matrix& operator/=(ld num) {
     DivNumber(num);
     return *this;
   }
+
+  Matrix operator/(const Matrix& other) const {
+    return *this * other.Inverse();
+  }
+
+  Matrix& operator/=(const Matrix& other) { return *this *= other.Inverse(); }
 
   bool operator==(const Matrix& other) const {
     bool result = (rows_ != other.rows_ || cols_ != other.cols_) ? false : true;
