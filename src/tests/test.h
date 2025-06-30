@@ -6,10 +6,10 @@
 
 class MatrixTest : public ::testing::Test {
  protected:
-  Matrix matrix;
+  Matrix<long double> matrix;
 
   void SetUp() override {
-    matrix = Matrix(2, 2);
+    matrix = Matrix<long double>(2, 2);
     matrix(0, 0) = 1;
     matrix(0, 1) = 2;
     matrix(1, 0) = 2;

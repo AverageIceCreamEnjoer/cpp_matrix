@@ -7,9 +7,11 @@
 #include <memory>
 #include <vector>
 
-using ld = long double;
-
+template <typename T>
 class Matrix final {
+  static_assert(std::is_arithmetic<T>::value,
+                "Matrix can only be initialized with arithmetic types");
+
  public:
   Matrix() noexcept
       : rows_(0), cols_(0), matrix_(nullptr) {}  // Default constructor
@@ -18,11 +20,11 @@ class Matrix final {
     if (rows_ < 0 || cols_ < 0)
       throw std::invalid_argument(
           "Matrix size must be non-negative");  // exception
-    matrix_ = std::make_unique<ld[]>(rows_ * cols_);
+    matrix_ = std::make_unique<T[]>(rows_ * cols_);
   }  // matrix rows*cols size
 
   Matrix(const Matrix& other) : rows_{other.rows_}, cols_{other.cols_} {
-    matrix_ = std::make_unique<ld[]>(rows_ * cols_);
+    matrix_ = std::make_unique<T[]>(rows_ * cols_);
     std::copy(other.matrix_.get(), other.matrix_.get() + rows_ * cols_,
               matrix_.get());
   }  // copy
@@ -43,20 +45,21 @@ class Matrix final {
 
   void SetRow(int row);
   void SetCol(int col);
-  Matrix Inverse() const;
-  Matrix Transpose() const noexcept;
+
+  Matrix<T> Inverse() const;
+  Matrix<T> Transpose() const noexcept;
   void SubMatrix(const Matrix& other);
   void SumMatrix(const Matrix& other);
-  void MulNumber(const ld num) noexcept;
-  void DivNumber(const ld num);
+  void MulNumber(const T num) noexcept;
+  void DivNumber(const T num);
   void MulMatrix(const Matrix& other);
-  ld Determinant() const;
-  ld Scalar(const Matrix& other) const;
-  Matrix CalcComplements() const;
-  ld Norm2() const noexcept;
+  T Determinant() const;
+  T Scalar(const Matrix& other) const;
+  Matrix<T> CalcComplements() const;
+  T Norm2() const noexcept;
   void Print() const;
-  std::vector<ld> Row(int index) const;
-  ld Cond_InfinityNorm() const;
+  std::vector<T> Row(int index) const;
+  T Cond_InfinityNorm() const;
 
   /**
    * @brief Решение системы линейных алгебраических уравнений Ax = f методом
@@ -70,7 +73,7 @@ class Matrix final {
    *
    * X = (L^{-1} * (U^{-1} * f))
    */
-  Matrix LUSolver(const Matrix& f) const;
+  Matrix<T> LUSolver(const Matrix& f) const;
 
   /**
    * @brief QR-разложение на базе отражений Хаусхолдера
@@ -96,7 +99,7 @@ class Matrix final {
    * @param   Reduction  - величина, до которой производится редукция
    *                       сингулярных чисел
    */
-  void SVD(Matrix& U, Matrix& Sigma, Matrix& V, ld Reduction) const;
+  void SVD(Matrix& U, Matrix& Sigma, Matrix& V, T Reduction) const;
 
   Matrix operator-() const noexcept {
     Matrix tmp(*this);
@@ -137,33 +140,33 @@ class Matrix final {
     return *this;
   }
 
-  Matrix operator*(const ld num) const noexcept {
+  Matrix operator*(const T num) const noexcept {
     Matrix tmp(*this);
     tmp.MulNumber(num);
     return tmp;
   }
 
-  Matrix& operator*=(const ld num) noexcept {
+  Matrix& operator*=(const T num) noexcept {
     MulNumber(num);
     return *this;
   }
 
-  friend Matrix operator*(const ld num, const Matrix& matrix) noexcept {
+  friend Matrix operator*(const T num, const Matrix& matrix) noexcept {
     Matrix tmp = matrix * num;
     return tmp;
   }
 
-  Matrix operator/(const ld num) const {
+  Matrix operator/(const T num) const {
     Matrix tmp(*this);
     tmp.DivNumber(num);
     return tmp;
   }
 
-  friend Matrix operator/(const ld num, const Matrix& matrix) {
+  friend Matrix operator/(const T num, const Matrix& matrix) {
     return num * matrix.Inverse();
   }
 
-  Matrix& operator/=(ld num) {
+  Matrix& operator/=(T num) {
     DivNumber(num);
     return *this;
   }
@@ -206,17 +209,17 @@ class Matrix final {
     return *this;
   }
 
-  ld& operator()(int row, int col) & {
-    return const_cast<ld&>(GetElem(row, col));
+  T& operator()(int row, int col) & {
+    return const_cast<T&>(GetElem(row, col));
   }
-  ld& operator()(int row, int col) && = delete;
-  const ld& operator()(int row, int col) const& { return GetElem(row, col); }
-  const ld& operator()(int row, int col) const&& = delete;
+  T& operator()(int row, int col) && = delete;
+  const T& operator()(int row, int col) const& { return GetElem(row, col); }
+  const T& operator()(int row, int col) const&& = delete;
 
  private:
   // Attributes
   int rows_, cols_;  // Rows and columns
-  std::unique_ptr<ld[]>
+  std::unique_ptr<T[]>
       matrix_;  // Pointer to the memory where the matrix is allocated
 
   // Private methods
@@ -226,7 +229,7 @@ class Matrix final {
     matrix_ = nullptr;
   }
 
-  const ld& GetElem(int row, int col) const {
+  const T& GetElem(int row, int col) const {
     if (!(row < rows_ && col < cols_ && row >= 0 && col >= 0)) {
       throw std::out_of_range("Index " + std::to_string(row) + ' ' +
                               std::to_string(col) +
@@ -235,7 +238,7 @@ class Matrix final {
     return matrix_.get()[row * cols_ + col];
   }
 
-  ld Minor(int row, int col) const {
+  T Minor(int row, int col) const {
     Matrix temp(rows_ - 1, rows_ - 1);
     int shift_i = 0;
     for (int i = 0; i < rows_ - 1; i++) {
@@ -251,3 +254,5 @@ class Matrix final {
 
   int FindMainElement(int j) const;
 };
+
+#include "matrix.tpp"

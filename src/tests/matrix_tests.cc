@@ -2,14 +2,14 @@
 
 // Тест для пустого конструктора
 TEST(MatrixTestNoSetUp, EmptyConstructor) {
-  Matrix matrix;
+  Matrix<int> matrix;
   EXPECT_EQ(matrix.GetRows(), 0);
   EXPECT_EQ(matrix.GetCols(), 0);
 }
 
 // Тест для стандратного конструктора
 TEST(MatrixTestNoSetUp, SuccessSetUp1) {
-  Matrix matrix(1, 1);
+  Matrix<int> matrix(1, 1);
   EXPECT_EQ(matrix.GetRows(), 1);
   EXPECT_EQ(matrix.GetCols(), 1);
   matrix(0, 0) = 1;
@@ -18,7 +18,7 @@ TEST(MatrixTestNoSetUp, SuccessSetUp1) {
 
 // Тест для стандратного конструктора
 TEST(MatrixTestNoSetUp, InvalidSetUp1) {
-  EXPECT_THROW(Matrix matrix(-1, -1), std::invalid_argument);
+  EXPECT_THROW(Matrix<double> matrix(-1, -1), std::invalid_argument);
 }
 
 // Тест для копирующего конструктора
@@ -34,7 +34,7 @@ TEST_F(MatrixTest, CopyConstructor1) {
 
 // Тест оператора присваивания копированием
 TEST_F(MatrixTest, CopyAssignment1) {
-  Matrix matrix2;
+  Matrix<long double> matrix2;
   matrix2 = matrix;
   EXPECT_EQ(matrix.GetRows(), 2);
   EXPECT_EQ(matrix.GetCols(), 2);
@@ -57,7 +57,7 @@ TEST_F(MatrixTest, MoveConstructor1) {
 
 // Тест для оператора присваивания перемещением
 TEST_F(MatrixTest, MoveAssignment1) {
-  Matrix matrix2;
+  Matrix<long double> matrix2;
   matrix2 = std::move(matrix);
   EXPECT_EQ(matrix2.GetRows(), 2);
   EXPECT_EQ(matrix2.GetCols(), 2);
