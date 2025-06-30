@@ -10,7 +10,7 @@ CPP_OBJECTS = $(patsubst %.cc,$(RES_DIR)/%.o,$(CPP_SOURCES))
 TEST_SOURCES = $(wildcard tests/*.cc)
 TEST_OBJECTS = $(patsubst %.cc,$(RES_DIR)/%.o,$(TEST_SOURCES))
 
-all: $(TARGET)
+all: test
 
 ifeq ($(MAKECMDGOALS), gcov_report)
 C_FLAGS += --coverage

@@ -16,27 +16,13 @@ class Matrix final {
   Matrix() noexcept
       : rows_(0), cols_(0), matrix_(nullptr) {}  // Default constructor
 
-  explicit Matrix(int rows, int cols) : rows_{rows}, cols_{cols} {
-    if (rows_ < 0 || cols_ < 0)
-      throw std::invalid_argument(
-          "Matrix size must be non-negative");  // exception
-    matrix_ = std::make_unique<T[]>(rows_ * cols_);
-  }  // matrix rows*cols size
+  explicit Matrix(int rows, int cols);  // matrix rows*cols size
 
-  Matrix(const Matrix& other) : rows_{other.rows_}, cols_{other.cols_} {
-    matrix_ = std::make_unique<T[]>(rows_ * cols_);
-    std::copy(other.matrix_.get(), other.matrix_.get() + rows_ * cols_,
-              matrix_.get());
-  }  // copy
+  explicit Matrix(std::initializer_list<std::initializer_list<T>> list);
 
-  Matrix(Matrix&& other) noexcept
-      : rows_{other.rows_},
-        cols_{other.cols_},
-        matrix_(std::move(other.matrix_)) {
-    other.matrix_ = nullptr;
-    other.rows_ = 0;
-    other.cols_ = 0;
-  }  // move
+  Matrix(const Matrix& other);  // copy
+
+  Matrix(Matrix&& other) noexcept;  // move
 
   ~Matrix() noexcept { Free(); }  // Destructor
 
@@ -46,8 +32,8 @@ class Matrix final {
   void SetRow(int row);
   void SetCol(int col);
 
-  Matrix<T> Inverse() const;
-  Matrix<T> Transpose() const noexcept;
+  Matrix Inverse() const;
+  Matrix Transpose() const noexcept;
   void SubMatrix(const Matrix& other);
   void SumMatrix(const Matrix& other);
   void MulNumber(const T num) noexcept;
@@ -55,7 +41,7 @@ class Matrix final {
   void MulMatrix(const Matrix& other);
   T Determinant() const;
   T Scalar(const Matrix& other) const;
-  Matrix<T> CalcComplements() const;
+  Matrix CalcComplements() const;
   T Norm2() const noexcept;
   void Print() const;
   std::vector<T> Row(int index) const;
@@ -73,7 +59,7 @@ class Matrix final {
    *
    * X = (L^{-1} * (U^{-1} * f))
    */
-  Matrix<T> LUSolver(const Matrix& f) const;
+  Matrix LUSolver(const Matrix& f) const;
 
   /**
    * @brief QR-разложение на базе отражений Хаусхолдера

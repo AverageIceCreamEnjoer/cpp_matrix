@@ -2,6 +2,49 @@
 #include "matrix.h"
 
 template <typename T>
+Matrix<T>::Matrix(int rows, int cols) : rows_{rows}, cols_{cols} {
+  if (rows_ < 0 || cols_ < 0)
+    throw std::invalid_argument(
+        "Matrix size must be non-negative");  // exception
+  matrix_ = std::make_unique<T[]>(rows_ * cols_);
+}
+
+template <typename T>
+Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> list) {
+  size_t size = list.begin()->size();
+  for (auto& row : list)
+    if (row.size() != size)
+      throw std::invalid_argument("Incorrect matrix size");
+  rows_ = static_cast<int>(list.size());
+  cols_ = static_cast<int>(size);
+  matrix_ = std::make_unique<T[]>(rows_ * cols_);
+  auto row = list.begin();
+  for (int i = 0; i < rows_; ++i) {
+    auto col = row->begin();
+    for (int j = 0; j < cols_; ++j) matrix_[i * cols_ + j] = *(col++);
+    ++row;
+  }
+}
+
+template <typename T>
+Matrix<T>::Matrix(const Matrix& other)
+    : rows_{other.rows_}, cols_{other.cols_} {
+  matrix_ = std::make_unique<T[]>(rows_ * cols_);
+  std::copy(other.matrix_.get(), other.matrix_.get() + rows_ * cols_,
+            matrix_.get());
+}
+
+template <typename T>
+Matrix<T>::Matrix(Matrix&& other) noexcept
+    : rows_{other.rows_},
+      cols_{other.cols_},
+      matrix_(std::move(other.matrix_)) {
+  other.matrix_ = nullptr;
+  other.rows_ = 0;
+  other.cols_ = 0;
+}
+
+template <typename T>
 void Matrix<T>::SetRow(int row) {
   if (row < 0) throw std::invalid_argument("Matrix size must be non-negative");
   if (row != rows_) {

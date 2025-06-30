@@ -21,6 +21,21 @@ TEST(MatrixTestNoSetUp, InvalidSetUp1) {
   EXPECT_THROW(Matrix<double> matrix(-1, -1), std::invalid_argument);
 }
 
+// Тест для списка инициализации
+TEST(MatrixTestNoSetUp, ListInit1) {
+  Matrix<int> matrix({{1, 2}, {3, 4}});
+  EXPECT_EQ(matrix.GetRows(), 2);
+  EXPECT_EQ(matrix.GetCols(), 2);
+  EXPECT_EQ(matrix(0, 0), 1);
+  EXPECT_EQ(matrix(0, 1), 2);
+  EXPECT_EQ(matrix(1, 0), 3);
+  EXPECT_EQ(matrix(1, 1), 4);
+}
+
+TEST(MatrixTestNoSetUp, ListInit2) {
+  EXPECT_THROW(Matrix<int> matrix({{1, 2}, {3}}), std::invalid_argument);
+}
+
 // Тест для копирующего конструктора
 TEST_F(MatrixTest, CopyConstructor1) {
   Matrix matrix2(matrix);
@@ -418,7 +433,7 @@ TEST_F(MatrixTest, Norm2) {
 // Тест скалярного произведения
 TEST_F(MatrixTest, Scalar1) {
   Matrix matrix2(matrix);
-  EXPECT_EQ(matrix.Scalar(matrix), std::pow(matrix.Norm2(), 2));
+  EXPECT_FLOAT_EQ(matrix.Scalar(matrix), std::pow(matrix.Norm2(), 2));
 }
 
 TEST_F(MatrixTest, Scalar2) {
