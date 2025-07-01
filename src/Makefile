@@ -3,7 +3,7 @@ DOC_DIR = docs
 TEST_DIR = tests
 GCOV_DIR = coverage
 CC = g++
-C_FLAGS = -std=c++17 -Wall -Wextra -Werror -O3
+C_FLAGS = -std=c++20 -Wall -Wextra -Werror -O3
 LD_FLAGS =
 CPP_SOURCES = $(wildcard *.cc)
 CPP_OBJECTS = $(patsubst %.cc,$(RES_DIR)/%.o,$(CPP_SOURCES))
@@ -34,7 +34,7 @@ clean:
 gcov_report: test
 	mkdir -p $(GCOV_DIR)
 	lcov -c --directory . --output-file $(GCOV_DIR)/coverage.info --ignore-errors mismatch \
-	--include "$(pwd)/matrix.tpp" --include "$(pwd)/matrix.h"
+	--include "$(pwd)/matrix.*"
 	genhtml $(GCOV_DIR)/coverage.info --output-directory $(GCOV_DIR)/html
 
 vg: test

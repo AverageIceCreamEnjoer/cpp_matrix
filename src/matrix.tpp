@@ -144,13 +144,13 @@ void Matrix<T>::SumMatrix(const Matrix& other) {
 }
 
 template <typename T>
-void Matrix<T>::MulNumber(const T num) noexcept {
+void Matrix<T>::MulNumber(const value_type num) noexcept {
   for (int i = 0; i < rows_; i++)
     for (int j = 0; j < cols_; j++) (*this)(i, j) *= num;
 }
 
 template <typename T>
-void Matrix<T>::DivNumber(const T num) {
+void Matrix<T>::DivNumber(const value_type num) {
   if (std::abs(num) == 0) throw std::domain_error("Division by zero");
   for (int i = 0; i < rows_; ++i)
     for (int j = 0; j < cols_; ++j) (*this)(i, j) /= num;

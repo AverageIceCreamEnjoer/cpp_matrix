@@ -449,3 +449,16 @@ TEST_F(MatrixTest, Row1) {
 }
 
 TEST_F(MatrixTest, Row2) { EXPECT_THROW(matrix.Row(-1), std::out_of_range); }
+
+TEST_F(MatrixTest, Iterator1) {
+  auto it = matrix.begin();
+  EXPECT_EQ(*it, 1);
+  ++it;
+  EXPECT_EQ(*it, 2);
+  ++it;
+  EXPECT_EQ(*it, 2);
+  ++it;
+  EXPECT_EQ(*it, 1);
+  ++it;
+  EXPECT_EQ(it, matrix.end());
+}
