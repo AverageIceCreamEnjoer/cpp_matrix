@@ -3,95 +3,101 @@
 #include "matrix.h"
 
 template <typename T>
-Matrix<T>::MatrixIterator& Matrix<T>::MatrixIterator::operator++() {
-  ++MatrixIterator::pos_;
-  ++MatrixIterator::it_;
+Matrix<T>::MatrixRowIterator& Matrix<T>::MatrixRowIterator::operator++() {
+  ++MatrixRowIterator::pos_;
+  ++MatrixRowIterator::it_;
   return *this;
 }
 
 template <typename T>
-Matrix<T>::MatrixIterator Matrix<T>::MatrixIterator::operator++(int) {
-  MatrixIterator tmp(*this);
+Matrix<T>::MatrixRowIterator Matrix<T>::MatrixRowIterator::operator++(int) {
+  MatrixRowIterator tmp(*this);
   ++(*this);
   return tmp;
 }
 
 template <typename T>
-Matrix<T>::MatrixIterator Matrix<T>::MatrixIterator::operator+(
+Matrix<T>::MatrixRowIterator Matrix<T>::MatrixRowIterator::operator+(
     difference_type n) const {
-  return MatrixIterator(MatrixIterator::it_, MatrixIterator::pos_ + n);
+  return MatrixRowIterator(MatrixRowIterator::it_, MatrixRowIterator::pos_ + n);
 }
 
 template <typename T>
-Matrix<T>::MatrixIterator& Matrix<T>::MatrixIterator::operator--() {
-  --MatrixIterator::pos_;
-  --MatrixIterator::it_;
+Matrix<T>::MatrixRowIterator& Matrix<T>::MatrixRowIterator::operator--() {
+  --MatrixRowIterator::pos_;
+  --MatrixRowIterator::it_;
   return *this;
 }
 
 template <typename T>
-Matrix<T>::MatrixIterator Matrix<T>::MatrixIterator::operator--(int) {
-  MatrixIterator tmp(*this);
+Matrix<T>::MatrixRowIterator Matrix<T>::MatrixRowIterator::operator--(int) {
+  MatrixRowIterator tmp(*this);
   --(*this);
   return tmp;
 }
 
 template <typename T>
-Matrix<T>::MatrixIterator Matrix<T>::MatrixIterator::operator-(
+Matrix<T>::MatrixRowIterator Matrix<T>::MatrixRowIterator::operator-(
     difference_type n) const {
-  return MatrixIterator(MatrixIterator::it_, MatrixIterator::pos_ - n);
+  return MatrixRowIterator(MatrixRowIterator::it_, MatrixRowIterator::pos_ - n);
 }
 
 template <typename T>
-typename Matrix<T>::MatrixIterator::difference_type
-Matrix<T>::MatrixIterator::operator-(const MatrixIterator& other) const {
-  return MatrixIterator::pos_ - other.pos_;
+typename Matrix<T>::MatrixRowIterator::difference_type
+Matrix<T>::MatrixRowIterator::operator-(const MatrixRowIterator& other) const {
+  return MatrixRowIterator::pos_ - other.pos_;
 }
 
 template <typename T>
-Matrix<T>::reference Matrix<T>::MatrixIterator::operator*() const {
-  return *MatrixIterator::it_;
+Matrix<T>::reference Matrix<T>::MatrixRowIterator::operator*() const {
+  return *MatrixRowIterator::it_;
 }
 
 template <typename T>
-Matrix<T>::pointer Matrix<T>::MatrixIterator::operator->() const {
-  return MatrixIterator::it_;
+Matrix<T>::pointer Matrix<T>::MatrixRowIterator::operator->() const {
+  return MatrixRowIterator::it_;
 }
 
 template <typename T>
-bool Matrix<T>::MatrixIterator::operator==(const MatrixIterator& other) const {
-  return MatrixIterator::pos_ == other.pos_;
+bool Matrix<T>::MatrixRowIterator::operator==(
+    const MatrixRowIterator& other) const {
+  return MatrixRowIterator::pos_ == other.pos_;
 }
 
 template <typename T>
-bool Matrix<T>::MatrixIterator::operator!=(const MatrixIterator& other) const {
+bool Matrix<T>::MatrixRowIterator::operator!=(
+    const MatrixRowIterator& other) const {
   return !(*this == other);
 }
 
 template <typename T>
-bool Matrix<T>::MatrixIterator::operator>(const MatrixIterator& other) const {
-  return MatrixIterator::pos_ > other.pos_;
+bool Matrix<T>::MatrixRowIterator::operator>(
+    const MatrixRowIterator& other) const {
+  return MatrixRowIterator::pos_ > other.pos_;
 }
 
 template <typename T>
-bool Matrix<T>::MatrixIterator::operator<(const MatrixIterator& other) const {
-  return MatrixIterator::pos_ < other.pos_;
+bool Matrix<T>::MatrixRowIterator::operator<(
+    const MatrixRowIterator& other) const {
+  return MatrixRowIterator::pos_ < other.pos_;
 }
 
 template <typename T>
-bool Matrix<T>::MatrixIterator::operator>=(const MatrixIterator& other) const {
-  return MatrixIterator::pos_ >= other.pos_;
+bool Matrix<T>::MatrixRowIterator::operator>=(
+    const MatrixRowIterator& other) const {
+  return MatrixRowIterator::pos_ >= other.pos_;
 }
 
 template <typename T>
-bool Matrix<T>::MatrixIterator::operator<=(const MatrixIterator& other) const {
-  return MatrixIterator::pos_ <= other.pos_;
+bool Matrix<T>::MatrixRowIterator::operator<=(
+    const MatrixRowIterator& other) const {
+  return MatrixRowIterator::pos_ <= other.pos_;
 }
 
 template <typename T>
-Matrix<T>::reference Matrix<T>::MatrixIterator::operator[](
+Matrix<T>::reference Matrix<T>::MatrixRowIterator::operator[](
     difference_type n) const {
-  return *(MatrixIterator::it_ + n);
+  return *(MatrixRowIterator::it_ + n);
 }
 
 template <typename T>

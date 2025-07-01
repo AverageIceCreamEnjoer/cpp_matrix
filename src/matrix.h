@@ -42,6 +42,7 @@ class Matrix final {
   void SetCol(int col);
 
  protected:
+  template <typename Implementation>
   class MatrixIterator {
    public:
     using value_type = T;
@@ -53,8 +54,9 @@ class Matrix final {
     pointer it_;
     difference_type pos_;
 
+   public:
     MatrixIterator() = delete;
-    MatrixIterator(pointer data, difference_type pos = 0)
+    MatrixIterator(pointer data, difference_type pos = 0) noexcept
         : it_(data), pos_(pos) {}
     MatrixIterator(const MatrixIterator& other) noexcept
         : it_(other.it_), pos_(other.pos_) {}
@@ -63,6 +65,7 @@ class Matrix final {
       pos_ = other.pos_;
       return *this;
     }
+
     MatrixIterator(MatrixIterator&& other) noexcept
         : it_(other.it_), pos_(other.pos_) {
       other.it_ = nullptr;
@@ -73,67 +76,149 @@ class Matrix final {
       std::swap(pos_, other.pos_);
       return *this;
     }
-    ~MatrixIterator() = default;
+    ~MatrixIterator() noexcept { it_ = nullptr; };
 
-    virtual MatrixIterator& operator++();
-    virtual MatrixIterator operator++(int);
-    virtual MatrixIterator operator+(difference_type n) const;
-    virtual MatrixIterator& operator--();
-    virtual MatrixIterator operator--(int);
-    virtual MatrixIterator operator-(difference_type n) const;
-    virtual difference_type operator-(const MatrixIterator& other) const;
-    virtual reference operator*() const;
-    virtual pointer operator->() const;
-    virtual bool operator==(const MatrixIterator& other) const;
-    virtual bool operator!=(const MatrixIterator& other) const;
-    virtual bool operator>(const MatrixIterator& other) const;
-    virtual bool operator<(const MatrixIterator& other) const;
-    virtual bool operator>=(const MatrixIterator& other) const;
-    virtual bool operator<=(const MatrixIterator& other) const;
-    virtual reference operator[](difference_type n) const;
+    Implementation& operator++() { return impl()->operator++(); }
+    Implementation operator++(int) { return impl()->operator++(1); }
+    Implementation operator+(difference_type n) const {
+      return impl()->operator+(n);
+    }
+    Implementation& operator--() { return impl()->operator--(); }
+    Implementation operator--(int) { return impl()->operator--(1); }
+    Implementation operator-(difference_type n) const {
+      return impl()->operator-(n);
+    }
+    difference_type operator-(const Implementation& other) const {
+      return impl()->operator-(other);
+    }
+    reference operator*() const { return impl()->operator*(); }
+    pointer operator->() const { return impl()->operator->(); }
+    bool operator==(const Implementation& other) const {
+      return impl()->operator==(other);
+    }
+    bool operator!=(const Implementation& other) const {
+      return impl()->operator!=(other);
+    }
+    bool operator>(const Implementation& other) const {
+      return impl()->operator>(other);
+    }
+    bool operator<(const Implementation& other) const {
+      return impl()->operator<(other);
+    }
+    bool operator>=(const Implementation& other) const {
+      return impl()->operator>=(other);
+    }
+    bool operator<=(const Implementation& other) const {
+      return impl()->operator<=(other);
+    }
+    reference operator[](difference_type n) const {
+      return impl()->operator[](n);
+    }
+
+   private:
+    Implementation* impl() { return static_cast<Implementation*>(this); }
   };
 
-  class MatrixRowIterator : private MatrixIterator {
+  class MatrixRowIterator : public MatrixIterator<MatrixRowIterator> {
    public:
     using iterator_category = std::contiguous_iterator_tag;
     using value_type = T;
     using difference_type = std::ptrdiff_t;
     using pointer = T*;
     using reference = T&;
+    using parent = MatrixIterator<MatrixRowIterator>;
 
-    MatrixRowIterator(pointer data, difference_type pos = 0)
-        : MatrixIterator(data, pos) {}
-
-    MatrixIterator& operator++() override;
-    MatrixIterator operator++(int) override;
-    MatrixIterator operator+(difference_type n) const override;
-    MatrixIterator& operator--() override;
-    MatrixIterator operator--(int) override;
-    MatrixIterator operator-(difference_type n) const override;
-    difference_type operator-(const MatrixIterator& other) const override;
-    reference operator*() const override;
-    pointer operator->() const override;
-    bool operator==(const MatrixIterator& other) const override;
-    bool operator!=(const MatrixIterator& other) const override;
-    bool operator>(const MatrixIterator& other) const override;
-    bool operator<(const MatrixIterator& other) const override;
-    bool operator>=(const MatrixIterator& other) const override;
-    bool operator<=(const MatrixIterator& other) const override;
-    reference operator[](difference_type n) const override;
+    friend class MatrixIterator<MatrixRowIterator>;
+    MatrixRowIterator() = delete;
+    MatrixRowIterator(pointer data, difference_type pos = 0) noexcept
+        : parent(data, pos) {}
+    MatrixRowIterator(const MatrixRowIterator& other) noexcept
+        : parent(other.data_, other.pos_) {}
+    MatrixRowIterator& operator=(const MatrixRowIterator& other) noexcept {
+      parent::it_ = other.it_;
+      parent::pos_ = other.pos_;
+      return *this;
+    }
+    MatrixRowIterator(MatrixRowIterator&& other) noexcept {
+      parent::it_ = other.it_;
+      parent::pos_ = other.pos_;
+      other.it_ = nullptr;
+      other.pos_ = 0;
+    }
+    MatrixRowIterator& operator=(MatrixRowIterator&& other) noexcept {
+      std::swap(parent::it_, other.it_);
+      std::swap(parent::pos_, other.pos_);
+      return *this;
+    }
+    ~MatrixRowIterator() noexcept { parent::it_ = nullptr; };
+    MatrixRowIterator& operator++();
+    MatrixRowIterator operator++(int);
+    MatrixRowIterator operator+(difference_type n) const;
+    MatrixRowIterator& operator--();
+    MatrixRowIterator operator--(int);
+    MatrixRowIterator operator-(difference_type n) const;
+    difference_type operator-(const MatrixRowIterator& other) const;
+    reference operator*() const;
+    pointer operator->() const;
+    bool operator==(const MatrixRowIterator& other) const;
+    bool operator!=(const MatrixRowIterator& other) const;
+    bool operator>(const MatrixRowIterator& other) const;
+    bool operator<(const MatrixRowIterator& other) const;
+    bool operator>=(const MatrixRowIterator& other) const;
+    bool operator<=(const MatrixRowIterator& other) const;
+    reference operator[](difference_type n) const;
   };
   /*
-    class MatrixDiagonalIterator : public MartixIterator {
-     public:
-      MatrixIterator& operator++() override;
-      MatrixIterator operator++(int) override;
-      MatrixIterator& operator--() override;
-      MatrixIterator operator--(int) override;
-      reference operator*() const override;
-      const_reference operator*() const override;
-      bool operator==(const MatrixIterator& other) const override;
-      bool operator!=(const MatrixIterator& other) const override;
-    };
-  */
+  class MatrixDiagonalIterator : public MatrixIterator<MatrixDiagonalIterator> {
+    public:
+     using iterator_category = std::random_access_iterator_tag;
+     using value_type = T;
+     using difference_type = std::ptrdiff_t;
+     using pointer = T*;
+     using reference = T&;
+     using parent = MatrixIterator<MatrixDiagonalIterator>;
+
+     friend class MatrixIterator<MatrixDiagonalIterator>;
+     MatrixDiagonalIterator() = delete;
+     MatrixRowIterator(pointer data, difference_type pos = 0) noexcept
+         : parent(data, pos) {}
+     MatrixRowIterator(const MatrixRowIterator& other) noexcept
+         : parent(other.data_, other.pos_) {}
+     MatrixRowIterator& operator=(const MatrixRowIterator& other) noexcept {
+       parent::it_ = other.it_;
+       parent::pos_ = other.pos_;
+       return *this;
+     }
+     MatrixRowIterator(MatrixRowIterator&& other) noexcept {
+       parent::it_ = other.it_;
+       parent::pos_ = other.pos_;
+       other.it_ = nullptr;
+       other.pos_ = 0;
+     }
+     MatrixRowIterator& operator=(MatrixRowIterator&& other) noexcept {
+       std::swap(parent::it_, other.it_);
+       std::swap(parent::pos_, other.pos_);
+       return *this;
+     }
+     ~MatrixRowIterator() noexcept { parent::it_ = nullptr; };
+     MatrixRowIterator& operator++();
+     MatrixRowIterator operator++(int);
+     MatrixRowIterator operator+(difference_type n) const;
+     MatrixRowIterator& operator--();
+     MatrixRowIterator operator--(int);
+     MatrixRowIterator operator-(difference_type n) const;
+     difference_type operator-(const MatrixRowIterator& other) const;
+     reference operator*() const;
+     pointer operator->() const;
+     bool operator==(const MatrixRowIterator& other) const;
+     bool operator!=(const MatrixRowIterator& other) const;
+     bool operator>(const MatrixRowIterator& other) const;
+     bool operator<(const MatrixRowIterator& other) const;
+     bool operator>=(const MatrixRowIterator& other) const;
+     bool operator<=(const MatrixRowIterator& other) const;
+     reference operator[](difference_type n) const;
+   };*/
+
  public:
   using iterator = MatrixRowIterator;
   iterator begin() const noexcept;
