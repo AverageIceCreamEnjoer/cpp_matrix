@@ -462,3 +462,25 @@ TEST_F(MatrixTest, Iterator1) {
   ++it;
   EXPECT_EQ(it, matrix.end());
 }
+
+TEST_F(MatrixTest, Iterator2) {
+  auto it = matrix.d_begin();
+  EXPECT_EQ(*it, 1);
+  ++it;
+  EXPECT_EQ(*it, 1);
+  ++it;
+  EXPECT_EQ(it, matrix.d_end());
+}
+
+TEST_F(MatrixTest, Iterator3) {
+  auto it = matrix.end();
+  --it;
+  EXPECT_EQ(*it, 1);
+  --it;
+  EXPECT_EQ(*it, 2);
+  --it;
+  EXPECT_EQ(*it, 2);
+  --it;
+  EXPECT_EQ(*it, 1);
+  EXPECT_EQ(it, matrix.begin());
+}
