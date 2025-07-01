@@ -679,3 +679,13 @@ void Matrix<T>::SVD(Matrix& U, Matrix& Sigma, Matrix& V, T Reduction) const {
   U.SetCol(Min_Size);
   V.SetCol(Min_Size);
 }
+
+template <typename T>
+Matrix<T>::iterator Matrix<T>::begin() const noexcept {
+  return Matrix<T>::iterator(matrix_.get(), 0);
+}
+
+template <typename T>
+Matrix<T>::iterator Matrix<T>::end() const noexcept {
+  return Matrix<T>::iterator(matrix_.get(), rows_ * cols_);
+}

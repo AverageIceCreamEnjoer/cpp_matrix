@@ -449,3 +449,37 @@ TEST_F(MatrixTest, Row1) {
 }
 
 TEST_F(MatrixTest, Row2) { EXPECT_THROW(matrix.Row(-1), std::out_of_range); }
+
+TEST_F(MatrixTest, Iterator1) {
+  auto it = matrix.begin();
+  EXPECT_EQ(*(it++), 1);
+  EXPECT_EQ(*(it++), 2);
+  EXPECT_EQ(*(it++), 2);
+  EXPECT_EQ(*(it++), 1);
+  EXPECT_EQ(it, matrix.end());
+}
+
+TEST_F(MatrixTest, Iterator2) {
+  auto it = matrix.end();
+  EXPECT_EQ(*(--it), 1);
+  EXPECT_EQ(*(--it), 2);
+  EXPECT_EQ(*(--it), 2);
+  EXPECT_EQ(*(--it), 1);
+  EXPECT_EQ(it, matrix.begin());
+}
+
+TEST_F(MatrixTest, Iterator3) {
+  auto it = matrix.begin();
+  EXPECT_EQ(*(it + 2), 2);
+  EXPECT_EQ(*(it + 3), 1);
+}
+
+TEST_F(MatrixTest, Iterator4) {
+  auto it = matrix.end();
+  EXPECT_EQ(*(it - 2), 2);
+  EXPECT_EQ(*(it - 1), 1);
+}
+
+TEST_F(MatrixTest, Iterator5) { EXPECT_EQ(matrix.end() - matrix.begin(), 4); }
+
+TEST_F(MatrixTest, Iterator6) { EXPECT_EQ(matrix.begin()[2], 2); }

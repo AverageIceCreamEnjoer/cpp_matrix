@@ -3,7 +3,7 @@ DOC_DIR = docs
 TEST_DIR = tests
 GCOV_DIR = coverage
 CC = g++
-C_FLAGS = -std=c++17 -Wall -Wextra -Werror -O3
+C_FLAGS = -std=c++20 -Wall -Wextra -Werror -O3
 LD_FLAGS =
 CPP_SOURCES = $(wildcard *.cc)
 CPP_OBJECTS = $(patsubst %.cc,$(RES_DIR)/%.o,$(CPP_SOURCES))

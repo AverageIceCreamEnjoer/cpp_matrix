@@ -32,6 +32,102 @@ class Matrix final {
   void SetRow(int row);
   void SetCol(int col);
 
+ protected:
+  class MatrixIterator {
+   public:
+    using iterator_category = std::contiguous_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T*;
+    using reference = T&;
+
+   private:
+    pointer data_;
+    difference_type pos_;
+
+   public:
+    MatrixIterator() = delete;
+    MatrixIterator(pointer data, difference_type pos = 0) noexcept
+        : data_(data), pos_(pos) {}
+    MatrixIterator(const MatrixIterator& other) noexcept
+        : data_(other.data_), pos_(other.pos_) {}
+    MatrixIterator(MatrixIterator&& other) noexcept
+        : data_(other.data_), pos_(other.pos_) {
+      other.data_ = nullptr;
+      other.pos_ = 0;
+    }
+    MatrixIterator& operator=(const MatrixIterator& other) noexcept {
+      data_ = other.data_;
+      pos_ = other.pos_;
+      return *this;
+    }
+    MatrixIterator& operator=(MatrixIterator&& other) noexcept {
+      std::swap(data_, other.data_);
+      std::swap(pos_, other.pos_);
+      return *this;
+    }
+    ~MatrixIterator() { data_ = nullptr; };
+
+    reference operator*() const noexcept { return data_[pos_]; }
+    pointer operator->() const noexcept { return &data_[pos_]; }
+    MatrixIterator& operator++() noexcept {
+      ++pos_;
+      return *this;
+    }
+    MatrixIterator operator++(int) noexcept {
+      MatrixIterator tmp = *this;
+      ++pos_;
+      return tmp;
+    }
+    MatrixIterator operator--() noexcept {
+      --pos_;
+      return *this;
+    }
+    MatrixIterator operator--(int) noexcept {
+      MatrixIterator tmp = *this;
+      --pos_;
+      return tmp;
+    }
+    bool operator==(const MatrixIterator& other) const noexcept {
+      return data_ == other.data_ && pos_ == other.pos_;
+    }
+    bool operator!=(const MatrixIterator& other) const noexcept {
+      return !(*this == other);
+    }
+    bool operator>(const MatrixIterator& other) const noexcept {
+      return pos_ > other.pos_;
+    }
+    bool operator>=(const MatrixIterator& other) const noexcept {
+      return pos_ >= other.pos_;
+    }
+    bool operator<(const MatrixIterator& other) const noexcept {
+      return pos_ < other.pos_;
+    }
+    bool operator<=(const MatrixIterator& other) const noexcept {
+      return pos_ <= other.pos_;
+    }
+    difference_type operator-(const MatrixIterator& other) const noexcept {
+      return pos_ - other.pos_;
+    }
+    MatrixIterator operator+(const difference_type offset) const noexcept {
+      MatrixIterator tmp = *this;
+      tmp.pos_ += offset;
+      return tmp;
+    }
+    MatrixIterator operator-(const difference_type offset) const noexcept {
+      MatrixIterator tmp = *this;
+      tmp.pos_ -= offset;
+      return tmp;
+    }
+    reference operator[](const difference_type offset) const noexcept {
+      return data_[pos_ + offset];
+    }
+  };
+
+ public:
+  using iterator = MatrixIterator;
+  iterator begin() const noexcept;
+  iterator end() const noexcept;
   Matrix Inverse() const;
   Matrix Transpose() const noexcept;
   void SubMatrix(const Matrix& other);
