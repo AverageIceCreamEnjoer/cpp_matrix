@@ -3,7 +3,7 @@ DOC_DIR = docs
 TEST_DIR = tests
 GCOV_DIR = coverage
 CC = g++
-C_FLAGS = -std=c++20 -Wall -Wextra -Werror -O3
+C_FLAGS = -std=c++20 -Wall -Wextra -Werror
 LD_FLAGS =
 CPP_SOURCES = $(wildcard *.cc)
 CPP_OBJECTS = $(patsubst %.cc,$(RES_DIR)/%.o,$(CPP_SOURCES))
@@ -15,6 +15,8 @@ all: test
 ifeq ($(MAKECMDGOALS), gcov_report)
 C_FLAGS += --coverage
 LD_FLAGS += --coverage
+else
+C_FLAGS += -O3
 endif
 
 test: $(RES_DIR) $(TEST_OBJECTS)

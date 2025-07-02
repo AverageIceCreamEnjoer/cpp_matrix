@@ -384,7 +384,7 @@ T Matrix<T>::Cond_InfinityNorm() const {
 template <typename T>
 void Householder_Col_Transform(Matrix<T>& A, Matrix<T>& U, int i, int j) {
   // вектор отражения
-  Matrix p(A.GetRows(), 1);
+  Matrix<T> p(A.GetRows(), 1);
   // вспомогательные переменные
   T s, beta, mu;
   // находим квадрат нормы столбца для обнуления
