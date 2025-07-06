@@ -689,3 +689,13 @@ template <typename T>
 Matrix<T>::iterator Matrix<T>::end() const noexcept {
   return Matrix<T>::iterator(matrix_.get(), rows_ * cols_);
 }
+
+template <typename T>
+Matrix<T>::const_iterator Matrix<T>::cbegin() const noexcept {
+  return Matrix<T>::const_iterator(begin());
+}
+
+template <typename T>
+Matrix<T>::const_iterator Matrix<T>::cend() const noexcept {
+  return Matrix<T>::const_iterator(end());
+}

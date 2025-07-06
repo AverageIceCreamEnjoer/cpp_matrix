@@ -124,10 +124,31 @@ class Matrix final {
     }
   };
 
+  class ConstMatrixIterator : public MatrixIterator {
+   public:
+    using MatrixIterator::MatrixIterator;
+    using value_type = const T;
+    using pointer = const T*;
+    using reference = const T&;
+
+    ConstMatrixIterator(const MatrixIterator& other) noexcept
+        : MatrixIterator(other) {}
+
+    reference operator*() const noexcept {
+      return const_cast<reference>(MatrixIterator::operator*());
+    }
+    pointer operator->() const noexcept {
+      return const_cast<pointer>(MatrixIterator::operator->());
+    }
+  };
+
  public:
   using iterator = MatrixIterator;
+  using const_iterator = ConstMatrixIterator;
   iterator begin() const noexcept;
   iterator end() const noexcept;
+  const_iterator cbegin() const noexcept;
+  const_iterator cend() const noexcept;
   Matrix Inverse() const;
   Matrix Transpose() const noexcept;
   void SubMatrix(const Matrix& other);

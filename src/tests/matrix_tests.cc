@@ -483,3 +483,35 @@ TEST_F(MatrixTest, Iterator4) {
 TEST_F(MatrixTest, Iterator5) { EXPECT_EQ(matrix.end() - matrix.begin(), 4); }
 
 TEST_F(MatrixTest, Iterator6) { EXPECT_EQ(matrix.begin()[2], 2); }
+
+TEST_F(MatrixTest, Iterator7) {
+  EXPECT_EQ(*(++matrix.begin()), 2);
+  auto it = matrix.end();
+  it--;
+  EXPECT_EQ(*it, 1);
+}
+
+TEST_F(MatrixTest, Iterator8) {
+  auto it1 = matrix.begin();
+  Matrix<long double>::iterator it2(std::move(it1));
+  EXPECT_EQ(*it2, 1);
+}
+
+TEST_F(MatrixTest, Iterator9) {
+  auto it1 = matrix.begin();
+  auto it2 = Matrix<long double>::iterator(std::move(it1));
+  EXPECT_EQ(*it2, 1);
+  it1 = matrix.begin();
+  EXPECT_EQ(*it1, 1);
+  it1 = --matrix.end();
+  EXPECT_EQ(*it1, 1);
+}
+
+TEST_F(MatrixTest, Iterator10) {
+  EXPECT_EQ(matrix.begin() != matrix.end(), true);
+}
+
+TEST_F(MatrixTest, Compare1) {
+  Matrix<long double> matrix2{{1, 1}, {2, 1}};
+  EXPECT_EQ(matrix == matrix2, false);
+}
