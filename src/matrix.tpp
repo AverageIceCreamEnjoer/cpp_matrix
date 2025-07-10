@@ -71,8 +71,9 @@ void Matrix<T>::SetCol(int col) {
 template <typename T>
 Matrix<T> Matrix<T>::Transpose() const noexcept {
   Matrix res(cols_, rows_);
+  auto ci = cbegin();
   for (int i = 0; i < rows_; i++)
-    for (int j = 0; j < cols_; j++) res(j, i) = (*this)(i, j);
+    for (int j = 0; j < cols_; j++) res(j, i) = *(ci++);
   return res;
 }
 
@@ -131,29 +132,27 @@ template <typename T>
 void Matrix<T>::SubMatrix(const Matrix& other) {
   if (!(rows_ == other.rows_ && cols_ == other.cols_))
     throw std::invalid_argument("Different matrix sizes");
-  for (int i = 0; i < rows_; i++)
-    for (int j = 0; j < cols_; j++) (*this)(i, j) -= other(i, j);
+  auto i2 = other.cbegin();
+  for (auto& i1 : *this) i1 -= *(i2++);
 }
 
 template <typename T>
 void Matrix<T>::SumMatrix(const Matrix& other) {
   if (!(rows_ == other.rows_ && cols_ == other.cols_))
     throw std::invalid_argument("Different matrix sizes");
-  for (int i = 0; i < rows_; i++)
-    for (int j = 0; j < cols_; j++) (*this)(i, j) += other(i, j);
+  auto i2 = other.cbegin();
+  for (auto& i1 : *this) i1 += *(i2++);
 }
 
 template <typename T>
 void Matrix<T>::MulNumber(const T num) noexcept {
-  for (int i = 0; i < rows_; i++)
-    for (int j = 0; j < cols_; j++) (*this)(i, j) *= num;
+  for (auto& i : *this) i *= num;
 }
 
 template <typename T>
 void Matrix<T>::DivNumber(const T num) {
   if (std::abs(num) == 0) throw std::domain_error("Division by zero");
-  for (int i = 0; i < rows_; ++i)
-    for (int j = 0; j < cols_; ++j) (*this)(i, j) /= num;
+  for (auto& i : *this) i /= num;
 }
 
 template <typename T>
@@ -170,8 +169,7 @@ void Matrix<T>::MulMatrix(const Matrix& other) {
 template <typename T>
 T Matrix<T>::Norm2() const noexcept {
   T result = 0;
-  for (int i = 0; i < rows_; ++i)
-    for (int j = 0; j < cols_; ++j) result += std::pow((*this)(i, j), 2);
+  for (const auto& ci : *this) result += std::pow(ci, 2);
   result = std::sqrt(result);
   return result;
 }

@@ -280,15 +280,16 @@ class Matrix final {
 
   Matrix& operator/=(const Matrix& other) { return *this *= other.Inverse(); }
 
-  bool operator==(const Matrix& other) const {
+  bool operator==(const Matrix& other) const noexcept {
     bool result = (rows_ != other.rows_ || cols_ != other.cols_) ? false : true;
-    if (result)
-      for (int i = 0; i < rows_; i++)
-        for (int j = 0; j < cols_; j++)
-          if ((*this)(i, j) != other(i, j)) {
-            result = false;
-            break;
-          }
+    if (result) {
+      auto ci = other.cbegin();
+      for (auto& i : *this)
+        if (i != *(ci++)) {
+          result = false;
+          break;
+        }
+    }
     return result;
   }
 
